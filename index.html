@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Online Auction System</title>
+<style>
+body{
+font-family:Arial;
+background:#f4f4f4;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:800px;
+margin:auto;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px gray;
+margin-bottom:20px;
+}
+
+input,select{
+width:100%;
+padding:10px;
+margin:10px 0;
+}
+
+button{
+width:100%;
+padding:10px;
+background:green;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+button:hover{
+background:darkgreen;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+table,th,td{
+border:1px solid gray;
+}
+
+th,td{
+padding:10px;
+text-align:center;
+}
+
+.open{
+color:green;
+font-weight:bold;
+}
+
+.closed{
+color:red;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+<h1>Online Auction/Bidding System</h1>
+
+<label>Select Item</label>
+
+<select id="itemSelect">
+<option>Gaming Laptop</option>
+<option>iPhone 15</option>
+<option>Smart Watch</option>
+</select>
+
+<h3 id="highestBid">
+Current Highest Bid: ₹50000
+</h3>
+
+<h3>
+Time Left:
+<span id="timer"></span>
+</h3>
+
+<h3 id="status" class="open">
+Auction Status : OPEN
+</h3>
+
+<input
+type="text"
+id="bidderName"
+placeholder="Enter Name">
+
+<input
+type="number"
+id="bidAmount"
+placeholder="Enter Bid Amount">
+
+<button onclick="placeBid()">
+Place Bid
+</button>
+
+<h3 id="winner"></h3>
+
+</div>
+
+<div class="card">
+
+<h2>Bid History</h2>
+
+<table>
+<thead>
+<tr>
+<th>Bidder</th>
+<th>Amount</th>
+</tr>
+</thead>
+
+<tbody id="history">
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+let highestBid=
+parseInt(localStorage.getItem("highestBid")) || 50000;
+
+let highestBidder=
+localStorage.getItem("highestBidder") || "No Bids";
+
+document.getElementById("highestBid")
+.innerHTML=
+"Current Highest Bid: ₹"+highestBid;
+
+function placeBid(){
+
+let name=
+document.getElementById("bidderName").value;
+
+let bid=
+parseInt(
+document.getElementById("bidAmount").value);
+
+if(auctionClosed){
+alert("Auction Closed");
+return;
+}
+
+if(name==""){
+alert("Enter Name");
+return;
+}
+
+if(bid>highestBid){
+
+highestBid=bid;
+highestBidder=name;
+
+localStorage.setItem(
+"highestBid",
+highestBid);
+
+localStorage.setItem(
+"highestBidder",
+highestBidder);
+
+document.getElementById("highestBid")
+.innerHTML=
+"Current Highest Bid: ₹"+highestBid;
+
+let row=
+"<tr><td>"+name+
+"</td><td>₹"+bid+
+"</td></tr>";
+
+document.getElementById("history")
+.innerHTML+=row;
+
+alert("Bid Accepted");
+
+}
+else{
+alert(
+"Bid must be greater than ₹"
++highestBid);
+}
+}
+
+let auctionClosed=false;
+
+let duration=120;
+
+let timer=
+setInterval(function(){
+
+let minutes=
+Math.floor(duration/60);
+
+let seconds=
+duration%60;
+
+document.getElementById("timer")
+.innerHTML=
+minutes+":"+
+(seconds<10?"0":"")+seconds;
+
+duration--;
+
+if(duration<0){
+
+clearInterval(timer);
+
+auctionClosed=true;
+
+document.getElementById("status")
+.innerHTML=
+"Auction Status : CLOSED";
+
+document.getElementById("status")
+.className="closed";
+
+document.getElementById("winner")
+.innerHTML=
+"Winner : "+
+highestBidder+
+" | Winning Bid : ₹"+
+highestBid;
+}
+
+},1000);
+
+</script>
+
+</body>
+</html>
